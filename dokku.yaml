@@ -94,6 +94,25 @@ resources:
                 permissions: '0444'
                 content: |
                   %domain%
+              - path: /tmp/heat/utils/get_latest_dokku_version
+                permissions: '0555'
+                content: |
+                  #!/usr/bin/env python
+
+                  import re
+                  import subprocess
+
+                  def git_lsremote_output(repo='https://github.com/progrium/dokku.git'):
+                      output = subprocess.check_output(['git', 'ls-remote', '--tags', repo])
+                      return output
+
+                  if __name__ == '__main__':
+                      output = git_lsremote_output()
+                      for line in output.splitlines():
+                          (hash, tagref) = line.split()
+                          (ref, tag, version) = tagref.split('/')
+                          if re.match('^v', version):
+                              print version
               - path: /tmp/heat/install_dokku.sh
                 permissions: '0500'
                 content: |
